@@ -12,15 +12,14 @@
     "Prettier"
   ],
   "license": "GPL-3.0",
-  "contributors": [
-    "Yanik Bachmann <baya1011@h-ka.de>",
-    "Tareq Daoud-Ghadieh <data1014@h-ka.de>"
-  ],
   "type": "module",
   "scripts": {
     "build": "bun build --compile --sourcemap ./src/beispiele.mts",
     "build:write": "bun build --compile --sourcemap ./src/beispiele-write.mts",
-    "eslint": "eslint --concurrency auto src package.json",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "prettier": "prettier -w src/*.mts"
   },
   "overrides": {
@@ -37,8 +36,6 @@
     "pg": "8.20.0"
   },
   "devDependencies": {
-    "@eslint-community/eslint-plugin-eslint-comments": "4.7.1",
-    "@eslint/js": "10.0.1",
     "@hono/node-server": "1.19.14",
     "@prettier/plugin-oxc": "0.1.4",
     "@stylistic/eslint-plugin": "5.10.0",
@@ -48,16 +45,9 @@
     "@types/eslint-plugin-security": "3.0.1",
     "@types/pg": "8.20.0",
     "@vitest/eslint-plugin": "1.6.16",
-    "eslint": "10.2.1",
-    "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-n": "17.24.0",
-    "eslint-plugin-no-secrets": "2.3.3",
-    "eslint-plugin-package-json": "0.91.1",
-    "eslint-plugin-promise": "7.2.1",
-    "eslint-plugin-regexp": "3.1.0",
-    "eslint-plugin-security": "4.0.0",
-    "eslint-plugin-sonarjs": "4.0.3",
-    "eslint-plugin-unicorn": "64.0.0",
+    "oxfmt": "0.49.0",
+    "oxlint": "1.64.0",
+    "oxlint-tsgolint": "0.22.1",
     "globals": "17.5.0",
     "jiti": "2.6.1",
     "leasot": "14.4.0",
