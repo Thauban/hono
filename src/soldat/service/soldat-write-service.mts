@@ -39,4 +39,18 @@ export class SoldatWriteService {
     constructor(readService: SoldatService) {
         this.#readService = readService;
     }
+
+    async create(soldat: SoldatCreate) {
+    this.#logger.debug('create: soldat=%o', soldat);
+
+    let soldatDb: Prisma.SoldatGetPayload<{}> | undefined;
+    await prismaClient.$transaction(async (tx) => {
+        soldatDb = await tx.soldat.create({
+            data: soldat,
+        });
+    });
+
+    this.#logger.debug('create: soldatDb.id=%s', soldatDb?.id);
+    return soldatDb?.id ?? Number.NaN;
+}
 }
