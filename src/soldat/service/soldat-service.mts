@@ -111,4 +111,9 @@ async #findAll(
     this.#logger.debug('createSlice: soldatSlice=%o', soldatSlice);
     return soldatSlice;
 }
+
+#checkKeys(keys: string[]) {
+    this.#logger.debug('#checkKeys: keys=%o', keys);
+    return keys.every((key) => suchparameterNamen.includes(key));
+}
 }  
