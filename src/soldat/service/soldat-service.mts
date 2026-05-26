@@ -1,0 +1,65 @@
+/**
+ * Das Modul besteht aus der Klasse {@linkcode SoldatService}.
+ * @packageDocumentation
+ */
+
+import { prismaClient } from '../../config/prisma-client.mts';
+import { type Prisma } from '../../generated/prisma/client.ts';
+import { getLogger } from '../../logger/logger.mts';
+import { NotFoundError } from './errors.mts';
+
+// Typdefinition fuer `findById`
+type FindByIdParams = {
+    readonly id: number;
+    readonly mitBeziehungen?: boolean;
+};
+
+export type SoldatMitAusruestungUndVerletzungen = Prisma.SoldatGetPayload<{
+    include: {
+        ausruestung: true;
+        verletzungen: true;
+    };
+}>;
+
+/**
+ * Die Klasse `SoldatService` implementiert das Lesen fuer Soldaten und greift
+ * mit _Prisma_ auf eine relationale DB zu.
+ */
+export class SoldatService {
+    static readonly ID_PATTERN = /^[1-9]\d{0,10}$/u;
+
+    readonly #includeBeziehungen: Prisma.SoldatInclude = {
+        ausruestung: true,
+        verletzungen: true,
+    };
+
+    readonly #logger = getLogger(SoldatService.name);
+
+    /**
+     * Einen Soldaten asynchron anhand seiner ID suchen.
+     * @param id ID des gesuchten Soldaten.
+     * @returns Der gefundene Soldat in einem Promise aus ES2015.
+     * @throws NotFoundError falls kein Soldat mit der ID existiert.
+     */
+    async findById({
+        id,
+        mitBeziehungen = true,
+    }: FindByIdParams): Promise<Readonly<SoldatMitAusruestungUndVerletzungen>> {
+        this.#logger.debug('findById: id=%d', id);
+
+        const soldat = await prismaClient.soldat.findUnique({
+            where: { id },
+            include: mitBeziehungen ? this.#includeBeziehungen : undefined,
+        });
+
+        if (soldat === null) {
+            this.#logger.debug('Es gibt keinen Soldaten mit der ID %d', id);
+            throw new NotFoundError(
+                `Es gibt keinen Soldaten mit der ID ${id}.`,
+            );
+        }
+
+        this.#logger.debug('findById: soldat=%o', soldat);
+        return soldat as SoldatMitAusruestungUndVerletzungen;
+    }
+}
