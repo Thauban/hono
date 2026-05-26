@@ -15,24 +15,24 @@ export class NotFoundError extends Error {}
  * Error-Klasse fuer eine ungueltige Versionsnummer beim Aendern.
  */
 export class VersionInvalidError extends Error {
-    readonly version: string | undefined;
+  readonly version: string | undefined;
 
-    constructor(version: string | undefined) {
-        super(`Die Versionsnummer ${version} ist ungueltig.`);
-        this.version = version;
-    }
+  constructor(version: string | undefined) {
+    super(`Die Versionsnummer ${version} ist ungueltig.`);
+    this.version = version;
+  }
 }
 
 /**
  * Error-Klasse fuer eine veraltete Versionsnummer beim Aendern.
  */
 export class VersionOutdatedError extends Error {
-    readonly version: number;
+  readonly version: number;
 
-    constructor(version: number) {
-        super(`Die Versionsnummer ${version} ist nicht aktuell.`);
-        this.version = version;
-    }
+  constructor(version: number) {
+    super(`Die Versionsnummer ${version} ist nicht aktuell.`);
+    this.version = version;
+  }
 }
 
 /* eslint-enable max-classes-per-file */
