@@ -1,0 +1,42 @@
+/**
+ * Das Modul besteht aus der Klasse {@linkcode SoldatWriteService} fuer die
+ * Schreiboperationen im Anwendungskern.
+ * @packageDocumentation
+ */
+
+import { prismaClient } from '../../config/prisma-client.mts';
+import { type Prisma } from '../../generated/prisma/client.ts';
+import { getLogger } from '../../logger/logger.mts';
+import {
+    NotFoundError,
+    VersionInvalidError,
+    VersionOutdatedError,
+} from './errors.mts';
+import { SoldatService } from './soldat-service.mts';
+
+export type SoldatCreate = Prisma.SoldatCreateInput;
+export type SoldatUpdate = Prisma.SoldatUpdateInput;
+
+export type UpdateParams = {
+    readonly id: number | undefined;
+    readonly soldat: SoldatUpdate;
+    readonly version: string;
+};
+
+type SoldatUpdated = Prisma.SoldatGetPayload<{}>;
+
+/**
+ * Die Klasse `SoldatWriteService` implementiert den Anwendungskern fuer das
+ * Schreiben von Soldaten und greift mit _Prisma_ auf die DB zu.
+ */
+export class SoldatWriteService {
+    private static readonly VERSION_PATTERN = /^"\d{1,3}"/u;
+
+    readonly #readService: SoldatService;
+
+    readonly #logger = getLogger(SoldatWriteService.name);
+
+    constructor(readService: SoldatService) {
+        this.#readService = readService;
+    }
+}
