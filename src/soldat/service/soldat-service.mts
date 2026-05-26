@@ -67,6 +67,48 @@ export class SoldatService {
         return soldat as SoldatMitAusruestungUndVerletzungen;
     }
 
+    async find(
+    suchparameter: Suchparameter | undefined,
+    pageable: Pageable,
+): Promise<Readonly<Slice<Readonly<SoldatMitAusruestungUndVerletzungen>>>> {
+    this.#logger.debug(
+        'find: suchparameter=%s, pageable=%o',
+        JSON.stringify(suchparameter),
+        pageable,
+    );
+
+    if (suchparameter === undefined || Object.keys(suchparameter).length === 0) {
+        return await this.#findAll(pageable);
+    }
+
+    const keys = Object.keys(suchparameter);
+    if (!this.#checkKeys(keys)) {
+        this.#logger.debug('Ungueltige Suchparameter: %o', keys);
+        throw new NotFoundError('Ungueltige Suchparameter');
+    }
+
+    const where = buildWhere(suchparameter);
+    const { number, size } = pageable;
+
+    const soldaten = await prismaClient.soldat.findMany({
+        where,
+        skip: number * size,
+        take: size,
+        include: this.#includeBeziehungen,
+        orderBy: { id: 'asc' },
+    });
+
+    if (soldaten.length === 0) {
+        this.#logger.debug('find: Keine Soldaten gefunden');
+        throw new NotFoundError(
+            `Keine Soldaten gefunden: ${JSON.stringify(suchparameter)}, Seite ${pageable.number}`,
+        );
+    }
+
+    const totalElements = await this.count(where);
+    return this.#createSlice(soldaten, totalElements);
+}
+
 async count(where?: Prisma.SoldatWhereInput) {
     this.#logger.debug('count: where=%o', where ?? 'undefined');
 
