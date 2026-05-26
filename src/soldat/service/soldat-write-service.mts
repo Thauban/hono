@@ -53,4 +53,37 @@ export class SoldatWriteService {
     this.#logger.debug('create: soldatDb.id=%s', soldatDb?.id);
     return soldatDb?.id ?? Number.NaN;
 }
+
+async update({ id, soldat, version }: UpdateParams) {
+    this.#logger.debug(
+        'update: id=%s, soldat=%o, version=%s',
+        id,
+        soldat,
+        version,
+    );
+
+    if (id === undefined) {
+        this.#logger.debug('update: Keine gueltige ID');
+        throw new NotFoundError(`Es gibt keinen Soldaten mit der ID ${id}.`);
+    }
+
+    await this.#validateUpdate(id, version);
+
+    soldat.version = { increment: 1 };
+
+    let soldatUpdated: SoldatUpdated | undefined;
+    await prismaClient.$transaction(async (tx) => {
+        soldatUpdated = await tx.soldat.update({
+            data: soldat,
+            where: { id },
+        });
+    });
+
+    this.#logger.debug(
+        'update: soldatUpdated=%s',
+        JSON.stringify(soldatUpdated),
+    );
+
+    return soldatUpdated?.version ?? Number.NaN;
+}
 }
