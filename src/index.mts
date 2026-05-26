@@ -1,52 +1,21 @@
 import { connectDB, disconnectDB } from './config/prisma-client.mts';
-import Bun from 'bun';
 import { app } from './app.mts';
-import { banner } from './logger/banner.mts';
-import { container } from './container.mts';
-import { env } from './config/env.mts';
-import process from 'node:process';
-import { serverConfig } from './config/server.mts';
 
-// Destructuring
-const { NODE_ENV } = env;
-if (NODE_ENV === 'development' || NODE_ENV === 'test') {
-    // selbst-signiertes Zertifikat: Umgebungsvariable NODE_TLS_REJECT_UNAUTHORIZED setzen
-    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-}
+const port = 3000;
 
-// app.fetch ist ist eine Funktion passend zur Signatur von fetch von Bun (s.u.):
-// (request: Request) => Response | Promise<Response>
-// Innerhalb von Hono erfolgt dann das Dispatching zu einer Route fuer GET, POST, usw.
-const { fetch } = app;
-const { port, portHttp, key, cert } = serverConfig;
-
-await container.dbPopulateService.populate();
 await connectDB();
 
-// fetch: Request-Handler fuer den Bun-Server mit Signatur gemaess Fetch-API von ES2015
-// d.h. eine Funktion, die einen Request empfaengt und einen Response produziert:
-// async function handler(req: Request): Promise<Response> { ... }
-// Shorthand Property
-Bun.serve({ port: portHttp, fetch });
 Bun.serve({
     port,
-    fetch,
-    tls: {
-        key,
-        cert,
-    },
+    fetch: app.fetch,
 });
 
-await banner();
+console.log(`Server laeuft auf http://localhost:${port}`);
 
-// https://bun.com/docs/guides/process/os-signals
-// KEINE asynchrone Funktion
 process.on('SIGINT', () => {
-    // IIFE  = Immediately Invoked Function Expression
-    // IIAFE = Immediately Invoked Asynchronous Function Expression
-    (async () => {
+    void (async () => {
         await disconnectDB();
+        console.log('Der Server wird heruntergefahren.');
+        process.exit(0);
     })();
-
-    console.log('Der Server wird heruntergefahren.');
 });
