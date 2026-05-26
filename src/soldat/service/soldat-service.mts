@@ -93,9 +93,22 @@ async #findAll(
     if (soldaten.length === 0) {
         this.#logger.debug('#findAll: Keine Soldaten gefunden');
         throw new NotFoundError(`Ungueltige Seite "${number}"`);
-    }
+    }   
 
     const totalElements = await this.count();
     return this.#createSlice(soldaten, totalElements);
+}
+
+#createSlice(
+    soldaten: SoldatMitAusruestungUndVerletzungen[],
+    totalElements: number,
+): Readonly<Slice<SoldatMitAusruestungUndVerletzungen>> {
+    const soldatSlice: Slice<SoldatMitAusruestungUndVerletzungen> = {
+        content: soldaten,
+        totalElements,
+    };
+
+    this.#logger.debug('createSlice: soldatSlice=%o', soldatSlice);
+    return soldatSlice;
 }
 }  
