@@ -78,4 +78,24 @@ async count(where?: Prisma.SoldatWhereInput) {
     return anzahl;
 }
 
+async #findAll(
+    pageable: Pageable,
+): Promise<Readonly<Slice<SoldatMitAusruestungUndVerletzungen>>> {
+    const { number, size } = pageable;
+
+    const soldaten = await prismaClient.soldat.findMany({
+        skip: number * size,
+        take: size,
+        include: this.#includeBeziehungen,
+        orderBy: { id: 'asc' },
+    });
+
+    if (soldaten.length === 0) {
+        this.#logger.debug('#findAll: Keine Soldaten gefunden');
+        throw new NotFoundError(`Ungueltige Seite "${number}"`);
+    }
+
+    const totalElements = await this.count();
+    return this.#createSlice(soldaten, totalElements);
+}
 }  
