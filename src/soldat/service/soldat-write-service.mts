@@ -86,4 +86,24 @@ async update({ id, soldat, version }: UpdateParams) {
 
     return soldatUpdated?.version ?? Number.NaN;
 }
+
+async #validateUpdate(id: number, versionStr: string) {
+    this.#logger.debug(
+        '#validateUpdate: id=%d, versionStr=%s',
+        id,
+        versionStr,
+    );
+
+    if (!SoldatWriteService.VERSION_PATTERN.test(versionStr)) {
+        throw new VersionInvalidError(versionStr);
+    }
+
+    const version = Number.parseInt(versionStr.slice(1, -1), 10);
+    const soldatDb = await this.#readService.findById({ id });
+
+    if (version < soldatDb.version) {
+        this.#logger.debug('#validateUpdate: versionDb=%d', soldatDb.version);
+        throw new VersionOutdatedError(version);
+    }
+}
 }
