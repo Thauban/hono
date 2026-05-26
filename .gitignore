@@ -1,19 +1,25 @@
-# dependencies (bun install)
+# compiled output
+dist
+
+# Abhaengige Dateien durch npm
 node_modules
+package-lock.json
 
 # output
 out
-dist
 *.tgz
 
 # code coverage
 coverage
 *.lcov
 
-# logs
+# Logs
+log
 logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+*.log
+pnpm-debug.log*
+lerna-debug.log*
+.scannerwork
 
 # dotenv environment variable files
 .env
@@ -58,3 +64,7 @@ sonar-project.properties
 .DS_Store
 
 beispiele-write.exe
+
+/generated/prisma
+
+/src/generated/prisma
