@@ -3,7 +3,7 @@ import {
   type rang,
   type schweregrad,
   type waffe,
-} from "../../generated/prisma/enums.ts";
+} from '../../generated/prisma/enums.ts';
 
 // Typdefinition für `find`
 export type Suchparameter = {
@@ -21,14 +21,14 @@ export type Suchparameter = {
 
 // gueltige Namen fuer die Suchparameter
 export const suchparameterNamen = [
-  "vorname",
-  "nachname",
-  "username",
-  "geschlecht",
-  "rang",
-  "waffe",
-  "seriennummer",
-  "verletzungsbezeichnung",
-  "schweregrad",
-  "behandelt",
+  'vorname',
+  'nachname',
+  'username',
+  'geschlecht',
+  'rang',
+  'waffe',
+  'seriennummer',
+  'verletzungsbezeichnung',
+  'schweregrad',
+  'behandelt',
 ];

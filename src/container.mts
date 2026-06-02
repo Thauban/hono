@@ -6,7 +6,6 @@ import { SoldatWriteService } from './soldat/service/soldat-write-service.mts';
 const soldatService = new SoldatService();
 
 export const container = {
-    
     soldatService,
     soldatWriteService: new SoldatWriteService(soldatService),
     keycloakService: new KeycloakService(),

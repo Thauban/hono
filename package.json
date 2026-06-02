@@ -5,14 +5,15 @@
   "description": "Beispiel",
   "keywords": [
     "Bun",
-    "Prisma",
-    "PostgreSQL",
-    "TypeScript",
     "ESLint",
-    "Prettier"
+    "PostgreSQL",
+    "Prettier",
+    "Prisma",
+    "TypeScript"
   ],
   "license": "GPL-3.0",
   "type": "module",
+  "module": "index.ts",
   "scripts": {
     "start": "bun src/index.mts",
     "test": "vitest",
@@ -25,11 +26,6 @@
     "fmt:check": "oxfmt --check",
     "prettier": "prettier -w src/*.mts"
   },
-  "overrides": {
-    "@hono/node-server": "1.19.14",
-    "hono": "4.12.14",
-    "lodash": "4.17.23"
-  },
   "dependencies": {
     "@prisma/adapter-pg": "7.7.0",
     "@prisma/client": "7.7.0",
@@ -39,9 +35,9 @@
     "hono": "4.12.14",
     "jose": "6.2.3",
     "nodemailer": "8.0.7",
+    "pg": "8.20.0",
     "pino": "10.3.1",
     "pino-pretty": "13.1.3",
-    "pg": "8.20.0",
     "smol-toml": "1.6.1",
     "zod": "4.4.3"
   },
@@ -55,33 +51,41 @@
     "@types/eslint-plugin-security": "3.0.1",
     "@types/pg": "8.20.0",
     "@vitest/eslint-plugin": "1.6.16",
-    "oxfmt": "0.49.0",
-    "oxlint": "1.64.0",
-    "oxlint-tsgolint": "0.22.1",
     "globals": "17.5.0",
     "jiti": "2.6.1",
     "leasot": "14.4.0",
+    "oxfmt": "0.49.0",
+    "oxlint": "1.64.0",
+    "oxlint-tsgolint": "0.22.1",
     "prettier": "3.8.3",
     "prisma": "7.7.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.58.2"
+    "typescript-eslint": "8.58.2",
+    "@vitest/coverage-v8": "4.1.5",
+    "@vitest/ui": "4.1.5",
+    "vitest": "4.1.5",
+    "vitest-mock-extended": "4.0.0"
   },
-  "packageManager": "bun@1.3.13",
-  "engines": {
-    "bun": ">=1.3.13",
-    "node": ">=26.0.0"
+  "overrides": {
+    "@hono/node-server": "1.19.14",
+    "hono": "4.12.14",
+    "lodash": "4.17.23"
   },
   "devEngines": {
-    "runtime": {
+    "packageManager": {
       "name": "bun",
       "version": "1.3.13",
       "onFail": "error"
     },
-    "packageManager": {
+    "runtime": {
       "name": "bun",
       "version": "1.3.13",
       "onFail": "error"
     }
   },
-  "module": "index.ts"
+  "engines": {
+    "bun": ">=1.3.13",
+    "node": ">=26.0.0"
+  },
+  "packageManager": "bun@1.3.13"
 }

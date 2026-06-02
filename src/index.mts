@@ -9,8 +9,8 @@ import { serverConfig } from './config/server.mts';
 
 const { NODE_ENV } = env;
 if (NODE_ENV === 'development' || NODE_ENV === 'test') {
-    // selbst-signiertes Zertifikat: Umgebungsvariable NODE_TLS_REJECT_UNAUTHORIZED setzen
-    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+  // selbst-signiertes Zertifikat: Umgebungsvariable NODE_TLS_REJECT_UNAUTHORIZED setzen
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 }
 
 const { fetch } = app;
@@ -21,22 +21,22 @@ await connectDB();
 
 Bun.serve({ port: portHttp, fetch });
 Bun.serve({
-    port,
-    fetch,
-    tls: {
-        key,
-        cert,
-    },
+  port,
+  fetch,
+  tls: {
+    key,
+    cert,
+  },
 });
 
 await banner();
 
 process.on('SIGINT', () => {
-    // IIFE  = Immediately Invoked Function Expression
-    // IIAFE = Immediately Invoked Asynchronous Function Expression
-    (async () => {
-        await disconnectDB();
-    })();
+  // IIFE  = Immediately Invoked Function Expression
+  // IIAFE = Immediately Invoked Asynchronous Function Expression
+  (async () => {
+    await disconnectDB();
+  })();
 
-    console.log('Der Server wird heruntergefahren.');
+  console.log('Der Server wird heruntergefahren.');
 });

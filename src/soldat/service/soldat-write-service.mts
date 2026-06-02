@@ -4,18 +4,24 @@
  * @packageDocumentation
  */
 
-import { prismaClient } from "../../config/prisma-client.mts";
-import { type Prisma } from "../../generated/prisma/client.ts";
-import { getLogger } from "../../logger/logger.mts";
+import { prismaClient } from '../../config/prisma-client.mts';
+import { type Prisma } from '../../generated/prisma/client.ts';
+import { getLogger } from '../../logger/logger.mts';
 import {
   NotFoundError,
   VersionInvalidError,
   VersionOutdatedError,
-} from "./errors.mts";
-import { SoldatService } from "./soldat-service.mts";
+} from './errors.mts';
+import { SoldatService } from './soldat-service.mts';
 
 export type SoldatCreate = Prisma.SoldatCreateInput;
 export type SoldatUpdate = Prisma.SoldatUpdateInput;
+type SoldatCreated = Prisma.SoldatGetPayload<{
+  include: {
+    ausruestung: true;
+    verletzungen: true;
+  };
+}>;
 
 export type UpdateParams = {
   readonly id: number | undefined;
@@ -41,29 +47,33 @@ export class SoldatWriteService {
   }
 
   async create(soldat: SoldatCreate) {
-    this.#logger.debug("create: soldat=%o", soldat);
+    this.#logger.debug('create: soldat=%o', soldat);
 
-    let soldatDb: Prisma.SoldatGetPayload<{}> | undefined;
+    let soldatDb: SoldatCreated | undefined;
     await prismaClient.$transaction(async (tx) => {
       soldatDb = await tx.soldat.create({
         data: soldat,
+        include: {
+          ausruestung: true,
+          verletzungen: true,
+        },
       });
     });
 
-    this.#logger.debug("create: soldatDb.id=%s", soldatDb?.id);
+    this.#logger.debug('create: soldatDb.id=%s', soldatDb?.id);
     return soldatDb?.id ?? Number.NaN;
   }
 
   async update({ id, soldat, version }: UpdateParams) {
     this.#logger.debug(
-      "update: id=%s, soldat=%o, version=%s",
+      'update: id=%s, soldat=%o, version=%s',
       id,
       soldat,
       version,
     );
 
     if (id === undefined) {
-      this.#logger.debug("update: Keine gueltige ID");
+      this.#logger.debug('update: Keine gueltige ID');
       throw new NotFoundError(`Es gibt keinen Soldaten mit der ID ${id}.`);
     }
 
@@ -80,7 +90,7 @@ export class SoldatWriteService {
     });
 
     this.#logger.debug(
-      "update: soldatUpdated=%s",
+      'update: soldatUpdated=%s',
       JSON.stringify(soldatUpdated),
     );
 
@@ -88,7 +98,7 @@ export class SoldatWriteService {
   }
 
   async #validateUpdate(id: number, versionStr: string) {
-    this.#logger.debug("#validateUpdate: id=%d, versionStr=%s", id, versionStr);
+    this.#logger.debug('#validateUpdate: id=%d, versionStr=%s', id, versionStr);
 
     if (!SoldatWriteService.VERSION_PATTERN.test(versionStr)) {
       throw new VersionInvalidError(versionStr);
@@ -98,8 +108,28 @@ export class SoldatWriteService {
     const soldatDb = await this.#readService.findById({ id });
 
     if (version < soldatDb.version) {
-      this.#logger.debug("#validateUpdate: versionDb=%d", soldatDb.version);
+      this.#logger.debug('#validateUpdate: versionDb=%d', soldatDb.version);
       throw new VersionOutdatedError(version);
     }
+  }
+
+  async delete(id: number) {
+    this.#logger.debug('delete: id=%d', id);
+
+    const soldat = await prismaClient.soldat.findUnique({
+      where: { id },
+    });
+
+    if (soldat === null) {
+      this.#logger.debug('delete: not found');
+      return false;
+    }
+
+    await prismaClient.$transaction(async (tx) => {
+      await tx.soldat.delete({ where: { id } });
+    });
+
+    this.#logger.debug('delete');
+    return true;
   }
 }

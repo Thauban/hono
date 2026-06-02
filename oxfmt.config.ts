@@ -20,30 +20,30 @@ import { defineConfig } from 'oxfmt';
 
 // oxlint-disable-next-line import/no-default-export
 export default defineConfig({
-    singleQuote: true,
-    trailingComma: 'all',
-    overrides: [
-        {
-            files: ['*.toml', '*.yml', '*.yaml'],
-            options: {
-                singleQuote: false,
-            },
-        },
-    ],
-    ignorePatterns: [
-        '*.md',
-        'src/config/resources/postgresql/*.sql',
-        'src/config/resources/tls/*.crt',
-        'src/config/resources/tls/*.pem',
-    ],
+  singleQuote: true,
+  trailingComma: 'all',
+  overrides: [
+    {
+      files: ['*.toml', '*.yml', '*.yaml'],
+      options: {
+        singleQuote: false,
+      },
+    },
+  ],
+  ignorePatterns: [
+    '*.md',
+    'src/config/resources/postgresql/*.sql',
+    'src/config/resources/tls/*.crt',
+    'src/config/resources/tls/*.pem',
+  ],
 
-    // von .editorconfig übernommen:
-    // end_of_line -> endOfLine
-    // indent_style -> useTabs
-    // indent_size -> tabWidth
-    // max_line_length -> printWidth
-    // insert_final_newline -> insertFinalNewline
+  // von .editorconfig übernommen:
+  // end_of_line -> endOfLine
+  // indent_style -> useTabs
+  // indent_size -> tabWidth
+  // max_line_length -> printWidth
+  // insert_final_newline -> insertFinalNewline
 
-    // default:
-    // sortPackageJson: true,
+  // default:
+  // sortPackageJson: true,
 });

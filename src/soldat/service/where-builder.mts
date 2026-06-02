@@ -3,17 +3,17 @@
  * @packageDocumentation
  */
 
-import { Prisma } from "../../generated/prisma/client.ts";
+import { Prisma } from '../../generated/prisma/client.ts';
 import {
   type geschlecht,
   type rang,
   type schweregrad,
   type waffe,
-} from "../../generated/prisma/enums.ts";
-import { getLogger } from "../../logger/logger.mts";
-import { type Suchparameter } from "./suchparameter.mts";
+} from '../../generated/prisma/enums.ts';
+import { getLogger } from '../../logger/logger.mts';
+import { type Suchparameter } from './suchparameter.mts';
 
-const logger = getLogger("buildWhere", "func");
+const logger = getLogger('buildWhere', 'func');
 
 const containsInsensitive = (value: string) => ({
   contains: value,
@@ -36,7 +36,7 @@ export const buildWhere = ({
   behandelt,
 }: Suchparameter): Prisma.SoldatWhereInput => {
   logger.debug(
-    "buildWhere: vorname=%s, nachname=%s, username=%s, rang=%s",
+    'buildWhere: vorname=%s, nachname=%s, username=%s, rang=%s',
     vorname,
     nachname,
     username,
@@ -101,13 +101,13 @@ export const buildWhere = ({
           ? {}
           : {
               behandelt: {
-                equals: behandelt.toLowerCase() === "true",
+                equals: behandelt.toLowerCase() === 'true',
               },
             }),
       },
     };
   }
 
-  logger.debug("buildWhere: where=%o", where);
+  logger.debug('buildWhere: where=%o', where);
   return where;
 };

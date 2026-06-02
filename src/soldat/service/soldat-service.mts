@@ -3,14 +3,14 @@
  * @packageDocumentation
  */
 
-import { prismaClient } from "../../config/prisma-client.mts";
-import { type Prisma } from "../../generated/prisma/client.ts";
-import { getLogger } from "../../logger/logger.mts";
-import { NotFoundError } from "./errors.mts";
-import { type Pageable } from "./pageable.mts";
-import { type Slice } from "./slice.mts";
-import { type Suchparameter, suchparameterNamen } from "./suchparameter.mts";
-import { buildWhere } from "./where-builder.mts";
+import { prismaClient } from '../../config/prisma-client.mts';
+import { type Prisma } from '../../generated/prisma/client.ts';
+import { getLogger } from '../../logger/logger.mts';
+import { NotFoundError } from './errors.mts';
+import { type Pageable } from './pageable.mts';
+import { type Slice } from './slice.mts';
+import { type Suchparameter, suchparameterNamen } from './suchparameter.mts';
+import { buildWhere } from './where-builder.mts';
 
 // Typdefinition fuer `findById`
 type FindByIdParams = {
@@ -49,7 +49,7 @@ export class SoldatService {
     id,
     mitBeziehungen = true,
   }: FindByIdParams): Promise<Readonly<SoldatMitAusruestungUndVerletzungen>> {
-    this.#logger.debug("findById: id=%d", id);
+    this.#logger.debug('findById: id=%d', id);
 
     const soldat = await prismaClient.soldat.findUnique({
       where: { id },
@@ -57,11 +57,11 @@ export class SoldatService {
     });
 
     if (soldat === null) {
-      this.#logger.debug("Es gibt keinen Soldaten mit der ID %d", id);
+      this.#logger.debug('Es gibt keinen Soldaten mit der ID %d', id);
       throw new NotFoundError(`Es gibt keinen Soldaten mit der ID ${id}.`);
     }
 
-    this.#logger.debug("findById: soldat=%o", soldat);
+    this.#logger.debug('findById: soldat=%o', soldat);
     return soldat as SoldatMitAusruestungUndVerletzungen;
   }
 
@@ -70,7 +70,7 @@ export class SoldatService {
     pageable: Pageable,
   ): Promise<Readonly<Slice<Readonly<SoldatMitAusruestungUndVerletzungen>>>> {
     this.#logger.debug(
-      "find: suchparameter=%s, pageable=%o",
+      'find: suchparameter=%s, pageable=%o',
       JSON.stringify(suchparameter),
       pageable,
     );
@@ -84,8 +84,8 @@ export class SoldatService {
 
     const keys = Object.keys(suchparameter);
     if (!this.#checkKeys(keys)) {
-      this.#logger.debug("Ungueltige Suchparameter: %o", keys);
-      throw new NotFoundError("Ungueltige Suchparameter");
+      this.#logger.debug('Ungueltige Suchparameter: %o', keys);
+      throw new NotFoundError('Ungueltige Suchparameter');
     }
 
     const where = buildWhere(suchparameter);
@@ -96,11 +96,11 @@ export class SoldatService {
       skip: number * size,
       take: size,
       include: this.#includeBeziehungen,
-      orderBy: { id: "asc" },
+      orderBy: { id: 'asc' },
     });
 
     if (soldaten.length === 0) {
-      this.#logger.debug("find: Keine Soldaten gefunden");
+      this.#logger.debug('find: Keine Soldaten gefunden');
       throw new NotFoundError(
         `Keine Soldaten gefunden: ${JSON.stringify(suchparameter)}, Seite ${pageable.number}`,
       );
@@ -111,12 +111,12 @@ export class SoldatService {
   }
 
   async count(where?: Prisma.SoldatWhereInput) {
-    this.#logger.debug("count: where=%o", where ?? "undefined");
+    this.#logger.debug('count: where=%o', where ?? 'undefined');
 
     const { count } = prismaClient.soldat;
     const anzahl = where === undefined ? await count() : await count({ where });
 
-    this.#logger.debug("count: %d", anzahl);
+    this.#logger.debug('count: %d', anzahl);
     return anzahl;
   }
 
@@ -129,11 +129,11 @@ export class SoldatService {
       skip: number * size,
       take: size,
       include: this.#includeBeziehungen,
-      orderBy: { id: "asc" },
+      orderBy: { id: 'asc' },
     });
 
     if (soldaten.length === 0) {
-      this.#logger.debug("#findAll: Keine Soldaten gefunden");
+      this.#logger.debug('#findAll: Keine Soldaten gefunden');
       throw new NotFoundError(`Ungueltige Seite "${number}"`);
     }
 
@@ -150,12 +150,12 @@ export class SoldatService {
       totalElements,
     };
 
-    this.#logger.debug("createSlice: soldatSlice=%o", soldatSlice);
+    this.#logger.debug('createSlice: soldatSlice=%o', soldatSlice);
     return soldatSlice;
   }
 
   #checkKeys(keys: string[]) {
-    this.#logger.debug("#checkKeys: keys=%o", keys);
+    this.#logger.debug('#checkKeys: keys=%o', keys);
     return keys.every((key) => suchparameterNamen.includes(key));
   }
 }
