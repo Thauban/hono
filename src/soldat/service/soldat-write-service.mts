@@ -7,11 +7,21 @@
 import { prismaClient } from '../../config/prisma-client.mts';
 import { type Prisma } from '../../generated/prisma/client.ts';
 import { getLogger } from '../../logger/logger.mts';
-import { NotFoundError, VersionInvalidError, VersionOutdatedError } from './errors.mts';
+import {
+  NotFoundError,
+  VersionInvalidError,
+  VersionOutdatedError,
+} from './errors.mts';
 import { SoldatService } from './soldat-service.mts';
 
 export type SoldatCreate = Prisma.SoldatCreateInput;
 export type SoldatUpdate = Prisma.SoldatUpdateInput;
+type SoldatCreated = Prisma.SoldatGetPayload<{
+  include: {
+    ausruestung: true;
+    verletzungen: true;
+  };
+}>;
 
 export type UpdateParams = {
   readonly id: number | undefined;
@@ -39,10 +49,14 @@ export class SoldatWriteService {
   async create(soldat: SoldatCreate) {
     this.#logger.debug('create: soldat=%o', soldat);
 
-    let soldatDb: Prisma.SoldatGetPayload<{}> | undefined;
+    let soldatDb: SoldatCreated | undefined;
     await prismaClient.$transaction(async (tx) => {
       soldatDb = await tx.soldat.create({
         data: soldat,
+        include: {
+          ausruestung: true,
+          verletzungen: true,
+        },
       });
     });
 
@@ -51,7 +65,12 @@ export class SoldatWriteService {
   }
 
   async update({ id, soldat, version }: UpdateParams) {
-    this.#logger.debug('update: id=%s, soldat=%o, version=%s', id, soldat, version);
+    this.#logger.debug(
+      'update: id=%s, soldat=%o, version=%s',
+      id,
+      soldat,
+      version,
+    );
 
     if (id === undefined) {
       this.#logger.debug('update: Keine gueltige ID');
@@ -70,7 +89,10 @@ export class SoldatWriteService {
       });
     });
 
-    this.#logger.debug('update: soldatUpdated=%s', JSON.stringify(soldatUpdated));
+    this.#logger.debug(
+      'update: soldatUpdated=%s',
+      JSON.stringify(soldatUpdated),
+    );
 
     return soldatUpdated?.version ?? Number.NaN;
   }
@@ -89,5 +111,25 @@ export class SoldatWriteService {
       this.#logger.debug('#validateUpdate: versionDb=%d', soldatDb.version);
       throw new VersionOutdatedError(version);
     }
+  }
+
+  async delete(id: number) {
+    this.#logger.debug('delete: id=%d', id);
+
+    const soldat = await prismaClient.soldat.findUnique({
+      where: { id },
+    });
+
+    if (soldat === null) {
+      this.#logger.debug('delete: not found');
+      return false;
+    }
+
+    await prismaClient.$transaction(async (tx) => {
+      await tx.soldat.delete({ where: { id } });
+    });
+
+    this.#logger.debug('delete');
+    return true;
   }
 }
