@@ -5,6 +5,9 @@ import {
   VersionOutdatedError,
 } from './soldat/service/errors.mts';
 import { router } from './soldat/router/soldat-router.mts';
+import { router as soldatWriteRouter } from './soldat/router/soldat-write-router.mts';
+import { router as authRouter } from './security/auth-router.mts';
+import { router as healthRouter } from './admin/health-router.mts';
 import { compress } from 'hono/compress';
 import { cors } from 'hono/cors';
 import { corsOptions } from './config/cors.mts';
@@ -41,12 +44,16 @@ app.use(secureHeaders(), cors(corsOptions), securityHeaders, compress());
 // R o u t e n
 // -----------------------------------------------------------------------------
 
+
+app.route(paths.rest, router);
+app.route(paths.rest, soldatWriteRouter);
+app.route(paths.health, healthRouter);
+app.route(paths.auth, authRouter);
+
 const { NODE_ENV } = env;
 if (NODE_ENV === 'development' || NODE_ENV === 'test') {
   app.route(paths.dev, devRouter);
 }
-
-app.route(paths.rest, router);
 
 // -----------------------------------------------------------------------------
 // E r r o r   H a n d l e r
