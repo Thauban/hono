@@ -4,15 +4,11 @@
  * @packageDocumentation
  */
 
-import { prismaClient } from "../../config/prisma-client.mts";
-import { type Prisma } from "../../generated/prisma/client.ts";
-import { getLogger } from "../../logger/logger.mts";
-import {
-  NotFoundError,
-  VersionInvalidError,
-  VersionOutdatedError,
-} from "./errors.mts";
-import { SoldatService } from "./soldat-service.mts";
+import { prismaClient } from '../../config/prisma-client.mts';
+import { type Prisma } from '../../generated/prisma/client.ts';
+import { getLogger } from '../../logger/logger.mts';
+import { NotFoundError, VersionInvalidError, VersionOutdatedError } from './errors.mts';
+import { SoldatService } from './soldat-service.mts';
 
 export type SoldatCreate = Prisma.SoldatCreateInput;
 export type SoldatUpdate = Prisma.SoldatUpdateInput;
@@ -41,7 +37,7 @@ export class SoldatWriteService {
   }
 
   async create(soldat: SoldatCreate) {
-    this.#logger.debug("create: soldat=%o", soldat);
+    this.#logger.debug('create: soldat=%o', soldat);
 
     let soldatDb: Prisma.SoldatGetPayload<{}> | undefined;
     await prismaClient.$transaction(async (tx) => {
@@ -50,20 +46,15 @@ export class SoldatWriteService {
       });
     });
 
-    this.#logger.debug("create: soldatDb.id=%s", soldatDb?.id);
+    this.#logger.debug('create: soldatDb.id=%s', soldatDb?.id);
     return soldatDb?.id ?? Number.NaN;
   }
 
   async update({ id, soldat, version }: UpdateParams) {
-    this.#logger.debug(
-      "update: id=%s, soldat=%o, version=%s",
-      id,
-      soldat,
-      version,
-    );
+    this.#logger.debug('update: id=%s, soldat=%o, version=%s', id, soldat, version);
 
     if (id === undefined) {
-      this.#logger.debug("update: Keine gueltige ID");
+      this.#logger.debug('update: Keine gueltige ID');
       throw new NotFoundError(`Es gibt keinen Soldaten mit der ID ${id}.`);
     }
 
@@ -79,16 +70,13 @@ export class SoldatWriteService {
       });
     });
 
-    this.#logger.debug(
-      "update: soldatUpdated=%s",
-      JSON.stringify(soldatUpdated),
-    );
+    this.#logger.debug('update: soldatUpdated=%s', JSON.stringify(soldatUpdated));
 
     return soldatUpdated?.version ?? Number.NaN;
   }
 
   async #validateUpdate(id: number, versionStr: string) {
-    this.#logger.debug("#validateUpdate: id=%d, versionStr=%s", id, versionStr);
+    this.#logger.debug('#validateUpdate: id=%d, versionStr=%s', id, versionStr);
 
     if (!SoldatWriteService.VERSION_PATTERN.test(versionStr)) {
       throw new VersionInvalidError(versionStr);
@@ -98,7 +86,7 @@ export class SoldatWriteService {
     const soldatDb = await this.#readService.findById({ id });
 
     if (version < soldatDb.version) {
-      this.#logger.debug("#validateUpdate: versionDb=%d", soldatDb.version);
+      this.#logger.debug('#validateUpdate: versionDb=%d', soldatDb.version);
       throw new VersionOutdatedError(version);
     }
   }
