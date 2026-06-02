@@ -7,9 +7,9 @@ const SoldatComplete = z.strictObject({
     vorname: z.string().min(2).max(100),
     nachname: z.string().min(2).max(100),
     geburtsdatum: z.coerce.date(),
-    geschlecht: z.enum(['MAENNLICH', 'WEIBLICH', 'DIVERSE']),
-    rang: z.enum(['REKRUT','SOLDAT','ELITE-SOLDAT','CAPTAIN','KOMMANDANT']),
-
+    geschlecht: z.enum(['MAENNLICH', 'WEIBLICH']),
+    rang: z.enum(['REKRUT','SOLDAT','ELITE_SOLDAT','CAPTAIN','KOMMANDANT']),
+    username: z.string().min(3).max(20),
     ausruestung: z.strictObject({
         waffe: z.enum([ 'ODM_GEAR','Schrotflinte','Klinge']),
         seriennummer: z.string().regex(/^AOT-\d{5}[A-Z]{3}$/),
@@ -17,7 +17,7 @@ const SoldatComplete = z.strictObject({
     verletzungen: z
         .array(
             z.strictObject({
-                verletzungsbeschreibung: z.string().max(32),
+                verletzungsbezeichnung: z.string().max(32),
                 behandelt: z.boolean(),
                 schweregrad: z.enum(['LEICHT', 'MITTEL', 'SCHWER']),
                 verletzungsdatum: z.coerce.date(),
