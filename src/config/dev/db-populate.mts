@@ -9,56 +9,56 @@ import { readFile } from 'node:fs/promises';
 import { resourcesURL } from '../resources.mts';
 
 export class DbPopulateService {
-    readonly #dbPopulate = config.db?.populate === true;
+  readonly #dbPopulate = config.db?.populate === true;
 
-    readonly #dbURL = new URL('postgresql/', resourcesURL);
+  readonly #dbURL = new URL('postgresql/', resourcesURL);
 
-    readonly #prisma: PrismaClient;
+  readonly #prisma: PrismaClient;
 
-    readonly #prismaAdmin: PrismaClient;
+  readonly #prismaAdmin: PrismaClient;
 
-    readonly #logger = getLogger(DbPopulateService.name);
+  readonly #logger = getLogger(DbPopulateService.name);
 
-    constructor() {
-        this.#prisma = new PrismaClient({ adapter, errorFormat: 'pretty' });
+  constructor() {
+    this.#prisma = new PrismaClient({ adapter, errorFormat: 'pretty' });
 
-        const adapterAdmin = new PrismaPg({
-            connectionString: process.env['DATABASE_URL_ADMIN'],
-        });
-        this.#prismaAdmin = new PrismaClient({
-            adapter: adapterAdmin,
-            errorFormat: 'pretty',
-        });
+    const adapterAdmin = new PrismaPg({
+      connectionString: process.env['DATABASE_URL_ADMIN'],
+    });
+    this.#prismaAdmin = new PrismaClient({
+      adapter: adapterAdmin,
+      errorFormat: 'pretty',
+    });
+  }
+
+  async populate() {
+    if (!this.#dbPopulate) {
+      return;
     }
 
-    async populate() {
-        if (!this.#dbPopulate) {
-            return;
-        }
+    const dropScript = new URL('drop-table.sql', this.#dbURL);
+    this.#logger.debug('dropScript = %s', dropScript);
+    const dropStatements = await readFile(dropScript, 'utf8');
 
-        const dropScript = new URL('drop-table.sql', this.#dbURL);
-        this.#logger.debug('dropScript = %s', dropScript);
-        const dropStatements = await readFile(dropScript, 'utf8');
+    const createScript = new URL('create-table.sql', this.#dbURL);
+    this.#logger.debug('createScript = %s', createScript);
+    const createStatements = await readFile(createScript, 'utf8');
 
-        const createScript = new URL('create-table.sql', this.#dbURL);
-        this.#logger.debug('createScript = %s', createScript);
-        const createStatements = await readFile(createScript, 'utf8');
+    const copyScript = new URL('copy-csv.sql', this.#dbURL);
+    this.#logger.debug('copyScript = %s', copyScript);
+    const copyStatements = await readFile(copyScript, 'utf8');
 
-        const copyScript = new URL('copy-csv.sql', this.#dbURL);
-        this.#logger.debug('copyScript = %s', copyScript);
-        const copyStatements = await readFile(copyScript, 'utf8');
+    await this.#prisma.$connect();
+    await this.#prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(dropStatements);
+      await tx.$executeRawUnsafe(createStatements);
+    });
+    await this.#prisma.$disconnect();
 
-        await this.#prisma.$connect();
-        await this.#prisma.$transaction(async (tx) => {
-            await tx.$executeRawUnsafe(dropStatements);
-            await tx.$executeRawUnsafe(createStatements);
-        });
-        await this.#prisma.$disconnect();
-
-        await this.#prismaAdmin.$connect();
-        await this.#prismaAdmin.$transaction(async (tx) => {
-            await tx.$executeRawUnsafe(copyStatements);
-        });
-        await this.#prismaAdmin.$disconnect();
-    }
+    await this.#prismaAdmin.$connect();
+    await this.#prismaAdmin.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(copyStatements);
+    });
+    await this.#prismaAdmin.$disconnect();
+  }
 }

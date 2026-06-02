@@ -4,10 +4,8 @@ import { getLogger } from './logger.mts';
 
 const logger = getLogger('requestLogger', 'func');
 
-export const requestLogger = createMiddleware(
-    async (c: Context, next: Next) => {
-        const { method, url } = c.req;
-        logger.debug('method=%s, url=%s', method, url);
-        await next();
-    },
-);
+export const requestLogger = createMiddleware(async (c: Context, next: Next) => {
+  const { method, url } = c.req;
+  logger.debug('method=%s, url=%s', method, url);
+  await next();
+});

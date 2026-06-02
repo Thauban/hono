@@ -5,8 +5,8 @@ import { getLogger } from './logger.mts';
 const logger = getLogger('responseTime', 'func');
 
 export const responseTime = createMiddleware(async (c: Context, next: Next) => {
-    const start = Date.now();
-    await next();
-    const duration = Date.now() - start;
-    logger.debug('Response time: %d ms, %d', duration, c.res.status);
+  const start = Date.now();
+  await next();
+  const duration = Date.now() - start;
+  logger.debug('Response time: %d ms, %d', duration, c.res.status);
 });
