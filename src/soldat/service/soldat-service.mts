@@ -75,7 +75,10 @@ export class SoldatService {
       pageable,
     );
 
-    if (suchparameter === undefined || Object.keys(suchparameter).length === 0) {
+    if (
+      suchparameter === undefined ||
+      Object.keys(suchparameter).length === 0
+    ) {
       return await this.#findAll(pageable);
     }
 

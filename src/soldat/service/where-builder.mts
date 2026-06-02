@@ -69,7 +69,9 @@ export const buildWhere = ({
     where.ausruestung = {
       is: {
         ...(waffe === undefined ? {} : { waffe: { equals: waffe as waffe } }),
-        ...(seriennummer === undefined ? {} : { seriennummer: containsInsensitive(seriennummer) }),
+        ...(seriennummer === undefined
+          ? {}
+          : { seriennummer: containsInsensitive(seriennummer) }),
       },
     };
   }
@@ -84,7 +86,9 @@ export const buildWhere = ({
         ...(verletzungsbezeichnung === undefined
           ? {}
           : {
-              verletzungsbezeichnung: containsInsensitive(verletzungsbezeichnung),
+              verletzungsbezeichnung: containsInsensitive(
+                verletzungsbezeichnung,
+              ),
             }),
         ...(schweregrad === undefined
           ? {}
