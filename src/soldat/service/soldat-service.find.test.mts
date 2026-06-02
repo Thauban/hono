@@ -92,4 +92,59 @@ describe('SoldatService find', () => {
       `Keine Soldaten gefunden: ${JSON.stringify(suchparameter)}, Seite ${pageable.number}`,
     );
   });
+
+  test('keine suchparameter', async () => {
+    // given
+    const pageable: Pageable = {
+      number: 0,
+      size: 5,
+    };
+    const soldatMock: SoldatMitAusruestungUndVerletzungen = {
+      id: 1,
+      version: 0,
+      vorname: 'Reiner',
+      nachname: 'Braun',
+      geburtsdatum: new Date('1995-08-01'),
+      geschlecht: 'MAENNLICH',
+      rang: 'SOLDAT',
+      username: 'reiner',
+      erzeugt: new Date(),
+      aktualisiert: new Date(),
+      ausruestung: {
+        id: 1,
+        waffe: 'Klinge',
+        seriennummer: 'SN-1',
+        soldatId: 1,
+      },
+      verletzungen: [],
+    };
+
+    // return von prismaClient.soldat.findMany()
+    findManyMock.mockResolvedValueOnce([soldatMock]);
+    // return von prismaClient.soldat.count()
+    countMock.mockResolvedValueOnce(1);
+
+    // when
+    const soldaten = await service.find(undefined, pageable);
+
+    // then
+    expect(soldaten.content).toStrictEqual([soldatMock]);
+    expect(soldaten.totalElements).toBe(1);
+  });
+
+  test('ungueltiger suchparameter', async () => {
+    // given
+    const suchparameter = {
+      falschesFeld: 'abc',
+    } as unknown as Suchparameter;
+    const pageable: Pageable = {
+      number: 0,
+      size: 5,
+    };
+
+    // when / then
+    await expect(service.find(suchparameter, pageable)).rejects.toThrow(
+      'Ungueltige Suchparameter',
+    );
+  });
 });
