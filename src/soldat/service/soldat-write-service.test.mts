@@ -63,10 +63,20 @@ describe('SoldatWriteService create', () => {
             },
         };
 
-        const soldatDb = {
-            ...soldat,
+        const soldatDb: Prisma.SoldatGetPayload<{
+            include: {
+                ausruestung: true;
+                verletzungen: true;
+            };
+        }> = {
             id: idMock,
             version: 0,
+            vorname: 'Reiner',
+            nachname: 'Braun',
+            geburtsdatum: new Date('1995-08-01'),
+            geschlecht: 'MAENNLICH',
+            rang: 'SOLDAT',
+            username: 'reiner',
             erzeugt: new Date(),
             aktualisiert: new Date(),
             ausruestung: {
