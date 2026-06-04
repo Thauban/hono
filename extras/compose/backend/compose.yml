@@ -1,0 +1,7 @@
+# Aufruf:   docker compose up
+#           docker compose down
+
+include:
+  - path: ../postgres/compose.yml
+  - path: ../keycloak/compose.yml
+  #- path: ../mailpit/compose.yml
