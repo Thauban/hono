@@ -10,9 +10,11 @@ import { getLogger } from '../../logger/logger.mts';
 import {
   NotFoundError,
   VersionInvalidError,
+  SeriennummerExistsError,
   VersionOutdatedError,
 } from './errors.mts';
 import { SoldatService } from './soldat-service.mts';
+
 
 export type SoldatCreate = Prisma.SoldatCreateInput;
 export type SoldatUpdate = Prisma.SoldatUpdateInput;
@@ -50,15 +52,32 @@ export class SoldatWriteService {
     this.#logger.debug('create: soldat=%o', soldat);
 
     let soldatDb: SoldatCreated | undefined;
+
+try {
     await prismaClient.$transaction(async (tx) => {
-      soldatDb = await tx.soldat.create({
-        data: soldat,
-        include: {
-          ausruestung: true,
-          verletzungen: true,
-        },
-      });
+        soldatDb = await tx.soldat.create({
+            data: soldat,
+            include: {
+                ausruestung: true,
+                verletzungen: true,
+            },
+        });
     });
+} catch (error) {
+    if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'P2002'
+) {
+        const seriennummer =
+            soldat.ausruestung?.create?.seriennummer as string | undefined;
+
+        throw new SeriennummerExistsError(seriennummer);
+    }
+
+    throw error;
+}
 
     this.#logger.debug('create: soldatDb.id=%s', soldatDb?.id);
     return soldatDb?.id ?? Number.NaN;

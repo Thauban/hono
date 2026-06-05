@@ -35,4 +35,14 @@ export class VersionOutdatedError extends Error {
   }
 }
 
-/* eslint-enable max-classes-per-file */
+/**
+ * Error-Klasse fuer eine bereits existierende Seriennummer.
+ */
+export class SeriennummerExistsError extends Error {
+    readonly seriennummer: string | undefined;
+
+    constructor(seriennummer: string | undefined) {
+        super(`Die Seriennummer ${seriennummer} existiert bereits.`);
+        this.seriennummer = seriennummer;
+    }
+}
