@@ -16,6 +16,7 @@
   "module": "index.ts",
   "scripts": {
     "start": "bun src/index.mts",
+    "testd": "NODE_TLS_REJECT_UNAUTHORIZED=0 bun test",
     "test": "vitest",
     "build": "bun build --compile --sourcemap ./src/beispiele.mts",
     "build:write": "bun build --compile --sourcemap ./src/beispiele-write.mts",
