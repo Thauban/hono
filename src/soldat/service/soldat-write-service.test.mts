@@ -6,11 +6,8 @@ import {
     SoldatWriteService,
 } from './soldat-write-service.mts';
 
-// Hoisting: wird an den Datei-Anfang verschoben
-const { createMock, transactionMock } = vi.hoisted(() => ({
-    createMock: vi.fn<Prisma.SoldatDelegate['create']>(),
-    transactionMock: vi.fn(), // eslint-disable-line vitest/require-mock-type-parameters
-}));
+const createMock = vi.fn<Prisma.SoldatDelegate["create"]>();
+const transactionMock = vi.fn();
 
 // vi.mock() bewirkt Hoisting
 vi.mock('../../config/prisma-client.mts', () => ({

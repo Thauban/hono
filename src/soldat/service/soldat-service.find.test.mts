@@ -7,11 +7,8 @@ import {
 } from './soldat-service.mts';
 import { type Suchparameter } from './suchparameter.mts';
 
-// Hoisting: wird an den Datei-Anfang verschoben
-const { findManyMock, countMock } = vi.hoisted(() => ({
-  findManyMock: vi.fn<PrismaClient['soldat']['findMany']>(),
-  countMock: vi.fn<PrismaClient['soldat']['count']>(),
-}));
+const findManyMock = vi.fn<PrismaClient["soldat"]["findMany"]>();
+const countMock = vi.fn<PrismaClient["soldat"]["count"]>();
 
 // vi.mock() bewirkt Hoisting
 vi.mock('../../config/prisma-client.mts', () => ({

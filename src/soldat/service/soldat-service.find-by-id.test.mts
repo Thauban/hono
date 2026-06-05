@@ -5,10 +5,7 @@ import {
   type SoldatMitAusruestungUndVerletzungen,
 } from './soldat-service.mts';
 
-// Hoisting: wird an den (Datei-) Anfang verschoben
-const { findUniqueMock } = vi.hoisted(() => ({
-  findUniqueMock: vi.fn<PrismaClient['soldat']['findUnique']>(),
-}));
+const findUniqueMock = vi.fn<PrismaClient["soldat"]["findUnique"]>();
 
 // vi.mock() bewirkt Hoisting
 vi.mock('../../config/prisma-client.mts', () => ({
