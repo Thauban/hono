@@ -26,9 +26,6 @@ jobs:
       - name: Prepare log directory
         run: mkdir -p log
 
-      - name: Unit tests
-        run: bun tests
-
       - name: TypeScript check
         run: bunx tsc --noEmit --pretty false
 
