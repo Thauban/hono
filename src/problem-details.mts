@@ -1,5 +1,6 @@
 import { type ClientErrorStatusCode } from 'hono/utils/http-status';
 import { type Context } from 'hono';
+import { ForbiddenError, UnauthorizedError } from './security/errors.mts';
 
 export const badRequest = 400;
 export const unauthorized = 401;

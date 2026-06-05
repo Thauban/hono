@@ -47,7 +47,7 @@ CREATE INDEX IF NOT EXISTS soldat_nachname_idx ON soldat(nachname);
 CREATE TABLE IF NOT EXISTS ausruestung (
     id          INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1000) PRIMARY KEY,
     waffe         waffe NOT NULL,
-    seriennummer   TEXT NOT NULL,
+    seriennummer   TEXT NOT NULL UNIQUE,
     soldat_id  INTEGER NOT NULL REFERENCES soldat ON DELETE CASCADE
 );
 

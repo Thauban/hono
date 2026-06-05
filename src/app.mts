@@ -2,6 +2,7 @@ import { type Context, Hono, type Next } from 'hono';
 import {
   NotFoundError,
   VersionInvalidError,
+  SeriennummerExistsError,
   VersionOutdatedError,
 } from './soldat/service/errors.mts';
 import { router } from './soldat/router/soldat-router.mts';
@@ -62,6 +63,10 @@ if (NODE_ENV === 'development' || NODE_ENV === 'test') {
 app.onError((error, c) => {
  if (error instanceof NotFoundError) {
   return createProblemDetails(c, notFound, error.message);
+}
+
+if (error instanceof SeriennummerExistsError) {
+    return createProblemDetails(c, unprocessableContent, error.message);
 }
 
   if (error.name === 'ZodError') {
