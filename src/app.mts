@@ -54,6 +54,7 @@ app.route(paths.rest, router);
 app.route(paths.rest, soldatWriteRouter);
 app.route(paths.health, healthRouter);
 app.route(paths.auth, authRouter);
+app.route(paths.dev, devRouter);
 
 const { NODE_ENV } = env;
 if (NODE_ENV === 'development' || NODE_ENV === 'test') {
