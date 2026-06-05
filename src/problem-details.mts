@@ -7,6 +7,7 @@ export const forbidden = 403;
 export const preconditionFailed = 412;
 export const unprocessableContent = 422;
 export const preconditionRequired = 428;
+export const notFound = 404;
 
 export type ProblemDetails = {
   title: string;
@@ -67,6 +68,10 @@ export const createProblemDetails = (
         detail,
       };
       break;
+    }
+        case notFound: {
+        problemDetails = { title: 'Not Found', statusCode, detail };
+        break; 
     }
     default: {
       problemDetails = { title: 'Client Error', statusCode, detail };

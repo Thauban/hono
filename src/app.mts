@@ -21,6 +21,7 @@ import {
   createProblemDetails,
   preconditionFailed,
   unprocessableContent,
+  notFound
 } from './problem-details.mts';
 import { getLogger } from './logger/logger.mts';
 
@@ -59,9 +60,9 @@ if (NODE_ENV === 'development' || NODE_ENV === 'test') {
 // E r r o r   H a n d l e r
 // -----------------------------------------------------------------------------
 app.onError((error, c) => {
-  if (error instanceof NotFoundError) {
-    return c.notFound();
-  }
+ if (error instanceof NotFoundError) {
+  return createProblemDetails(c, notFound, error.message);
+}
 
   if (error.name === 'ZodError') {
     return createProblemDetails(c, unprocessableContent, (error as ZodError).issues);
