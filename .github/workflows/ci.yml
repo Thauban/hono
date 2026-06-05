@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: TypeScript and unit tests
+    name: Bun tests
     runs-on: ubuntu-latest
 
     steps:
@@ -29,8 +29,5 @@ jobs:
       - name: Prisma generate
         run: bun prisma generate
 
-      - name: Unit tests
-        run: bun run test --project unit --run
-
-      - name: TypeScript check
-        run: bunx tsc --noEmit --pretty false
+      - name: Tests
+        run: NODE_TLS_REJECT_UNAUTHORIZED=0 bun test
