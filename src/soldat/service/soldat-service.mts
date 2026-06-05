@@ -101,9 +101,7 @@ export class SoldatService {
 
     if (soldaten.length === 0) {
       this.#logger.debug('find: Keine Soldaten gefunden');
-      throw new NotFoundError(
-        `Keine Soldaten gefunden: ${JSON.stringify(suchparameter)}, Seite ${pageable.number}`,
-      );
+      throw new NotFoundError('Keine Soldaten gefunden.');
     }
 
     const totalElements = await this.count(where);
