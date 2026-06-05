@@ -34,5 +34,15 @@ router.get('/:id', async (c) => {
   const id = Number(idParam);
   const soldat: Readonly<SoldatMitAusruestungUndVerletzungen> = await service.findById({ id });
 
+  const ifNonMatch = c.req.header('If-None-Match');
+  const { version } = soldat;
+  if (ifNonMatch === `"${version}"`) {
+      return c.body(null, 304);
+  }
+
+  const { header, json } = c;
+  header('ETag', `"${version}"`);
+
+
   return c.json(soldat);
 });
