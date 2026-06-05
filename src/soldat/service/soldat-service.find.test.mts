@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { type PrismaClient } from '../../generated/prisma/client.ts';
-import { type Pageable } from './pageable.mts';
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { type PrismaClient } from "../../generated/prisma/client.ts";
+import { type Pageable } from "./pageable.mts";
 import {
   SoldatService,
   type SoldatMitAusruestungUndVerletzungen,
-} from './soldat-service.mts';
-import { type Suchparameter } from './suchparameter.mts';
+} from "./soldat-service.mts";
+import { type Suchparameter } from "./suchparameter.mts";
 
 const findManyMock = vi.fn<PrismaClient["soldat"]["findMany"]>();
 const countMock = vi.fn<PrismaClient["soldat"]["count"]>();
 
 // vi.mock() bewirkt Hoisting
-vi.mock('../../config/prisma-client.mts', () => ({
+vi.mock("../../config/prisma-client.mts", () => ({
   prismaClient: {
     soldat: {
       findMany: findManyMock,
@@ -20,7 +20,7 @@ vi.mock('../../config/prisma-client.mts', () => ({
   },
 }));
 
-describe('SoldatService find', () => {
+describe("SoldatService find", () => {
   let service: SoldatService;
 
   beforeEach(() => {
@@ -29,10 +29,10 @@ describe('SoldatService find', () => {
     countMock.mockReset();
   });
 
-  test('nachname vorhanden', async () => {
+  test("nachname vorhanden", async () => {
     // given
     const suchparameter: Suchparameter = {
-      nachname: 'Braun',
+      nachname: "Braun",
     };
     const pageable: Pageable = {
       number: 0,
@@ -41,18 +41,18 @@ describe('SoldatService find', () => {
     const soldatMock: SoldatMitAusruestungUndVerletzungen = {
       id: 1,
       version: 0,
-      vorname: 'Reiner',
-      nachname: 'Braun',
-      geburtsdatum: new Date('1995-08-01'),
-      geschlecht: 'MAENNLICH',
-      rang: 'SOLDAT',
-      username: 'reiner',
+      vorname: "Reiner",
+      nachname: "Braun",
+      geburtsdatum: new Date("1995-08-01"),
+      geschlecht: "MAENNLICH",
+      rang: "SOLDAT",
+      username: "reiner",
       erzeugt: new Date(),
       aktualisiert: new Date(),
       ausruestung: {
         id: 1,
-        waffe: 'Klinge',
-        seriennummer: 'SN-1',
+        waffe: "Klinge",
+        seriennummer: "SN-1",
         soldatId: 1,
       },
       verletzungen: [],
@@ -71,10 +71,10 @@ describe('SoldatService find', () => {
     expect(soldaten.totalElements).toBe(1);
   });
 
-  test('nachname nicht vorhanden', async () => {
+  test("nachname nicht vorhanden", async () => {
     // given
     const suchparameter: Suchparameter = {
-      nachname: 'Nichtvorhanden',
+      nachname: "Nichtvorhanden",
     };
     const pageable: Pageable = {
       number: 0,
@@ -86,11 +86,11 @@ describe('SoldatService find', () => {
 
     // when / then
     await expect(service.find(suchparameter, pageable)).rejects.toThrow(
-      `Keine Soldaten gefunden: ${JSON.stringify(suchparameter)}, Seite ${pageable.number}`,
+      "Keine Soldaten gefunden.",
     );
   });
 
-  test('keine suchparameter', async () => {
+  test("keine suchparameter", async () => {
     // given
     const pageable: Pageable = {
       number: 0,
@@ -99,18 +99,18 @@ describe('SoldatService find', () => {
     const soldatMock: SoldatMitAusruestungUndVerletzungen = {
       id: 1,
       version: 0,
-      vorname: 'Reiner',
-      nachname: 'Braun',
-      geburtsdatum: new Date('1995-08-01'),
-      geschlecht: 'MAENNLICH',
-      rang: 'SOLDAT',
-      username: 'reiner',
+      vorname: "Reiner",
+      nachname: "Braun",
+      geburtsdatum: new Date("1995-08-01"),
+      geschlecht: "MAENNLICH",
+      rang: "SOLDAT",
+      username: "reiner",
       erzeugt: new Date(),
       aktualisiert: new Date(),
       ausruestung: {
         id: 1,
-        waffe: 'Klinge',
-        seriennummer: 'SN-1',
+        waffe: "Klinge",
+        seriennummer: "SN-1",
         soldatId: 1,
       },
       verletzungen: [],
@@ -129,10 +129,10 @@ describe('SoldatService find', () => {
     expect(soldaten.totalElements).toBe(1);
   });
 
-  test('ungueltiger suchparameter', async () => {
+  test("ungueltiger suchparameter", async () => {
     // given
     const suchparameter = {
-      falschesFeld: 'abc',
+      falschesFeld: "abc",
     } as unknown as Suchparameter;
     const pageable: Pageable = {
       number: 0,
@@ -141,7 +141,7 @@ describe('SoldatService find', () => {
 
     // when / then
     await expect(service.find(suchparameter, pageable)).rejects.toThrow(
-      'Ungueltige Suchparameter',
+      "Ungueltige Suchparameter",
     );
   });
 });
