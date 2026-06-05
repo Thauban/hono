@@ -5,6 +5,7 @@ import {
   SeriennummerExistsError,
   VersionOutdatedError,
 } from './soldat/service/errors.mts';
+import { ForbiddenError, UnauthorizedError } from './security/errors.mts';
 import { router } from './soldat/router/soldat-router.mts';
 import { router as soldatWriteRouter } from './soldat/router/soldat-write-router.mts';
 import { router as authRouter } from './security/auth-router.mts';
@@ -21,6 +22,8 @@ import { type ZodError } from 'zod';
 import {
   createProblemDetails,
   preconditionFailed,
+  forbidden,
+  unauthorized,
   unprocessableContent,
   notFound
 } from './problem-details.mts';
@@ -77,6 +80,13 @@ if (error instanceof SeriennummerExistsError) {
     return createProblemDetails(c, preconditionFailed, error.message);
   }
 
+  if (error instanceof UnauthorizedError) {
+    return createProblemDetails(c, unauthorized, error.message);
+}
+
+if (error instanceof ForbiddenError) {
+    return createProblemDetails(c, forbidden, error.message);
+}
   logger.error('Interner Fehler: %o', error);
   console.log(error.stack);
   return c.body('Interner Fehler', 500);
